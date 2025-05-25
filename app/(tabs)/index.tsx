@@ -1,75 +1,177 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { COLORS } from "@/commons/colors"
+import { SCREEN_W } from '@/commons/size'
+import ScreenWrapper from '@/components/app/ScreenWrapper'
+import NetInfo from '@react-native-community/netinfo'
+import { ImageBackground } from 'expo-image'
+import { useRouter } from "expo-router"
+import { StatusBar } from 'expo-status-bar'
+import React, { useState } from 'react'
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import Animated from 'react-native-reanimated'
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 
-export default function HomeScreen() {
+type Props = {}
+
+const Page = (props: Props) => {
+
+ const [syncMessage, setSyncMessage] = useState("");
+ const router = useRouter();
+
+ const checkNetWork = () => {
+        NetInfo.fetch().then(state => {
+            router.push("/(tabs)/scanner");
+        });
+} 
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+    <ScreenWrapper>
+      <ImageBackground
+            source={require("@/assets/digitBg4.jpg")}
+            
+            style={{
+                flex: 1
+            }}
+        >
+            <StatusBar backgroundColor={COLORS.primary} />
+            
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "transparent"
+                }}
+            >
+                <Pressable
+                    onPress={() => {
+                         checkNetWork();
+                    }}
+                >
+                    <Animated.View style={{
+                        borderRadius: 95, 
+                        padding: 2,
+                        backgroundColor: COLORS.white,
+                        // transform: [{ scale }],
+                        borderWidth: 8,
+                        borderColor: COLORS.vert,
+                        marginRight: 40,
+                        marginTop: 380
+                    }}>
+                        <View style={styles.scanBtnRounder}>
+                            <Text style={styles.scanText}>Appuyez ici pour scanner votre QR Code</Text>
+                        </View>
+                    </Animated.View>
+                </Pressable>
+            </View>
+            
+            {/* Bouton de synchronisation (conservé comme dans le code original) */}
+            <TouchableOpacity
+                onPress={() => {
+                    router.push("/(tabs)/synchronize");
+                }}
+                style={{
+                    position: "absolute",
+                    bottom: SCREEN_W * 0.5,
+                    right: 140,
+                    backgroundColor: COLORS.white,
+                    width: 25,
+                    height: 40,
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: 10,
+                    gap: 25
+                }}
+            >
+                <Text style={{ color: COLORS.black, fontSize: 1 }}>...</Text>
+            </TouchableOpacity>
+            
+            {/* Message de synchronisation */}
+            {syncMessage ? (
+                <View style={styles.syncMessageContainer}>
+                    <Text style={styles.syncMessageText}>{syncMessage}</Text>
+                </View>
+            ) : null}
+            
+            {/* Indicateur de synchronisation automatique */}
+            <View style={styles.autoSyncIndicator}>
+                <Text style={styles.autoSyncText}>
+                    Sync auto: 11h et 18h
+                </Text>
+            </View>
+        </ImageBackground>
+    </ScreenWrapper>
+  )
 }
 
+export default Page
+
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+    btn: {
+        marginBottom: 5,
+        justifyContent: "space-between",
+        alignItems: "center",
+        borderWidth: 1,
+        borderColor: COLORS.white,
+        paddingHorizontal: 1,
+        paddingVertical: 2,
+        width: 150,
+        borderRadius: 30,
+        backgroundColor: COLORS.fird
+    },
+    bottom: {
+        alignItems: "center",
+        backgroundColor: "red"
+    },
+    scanBtnRounder: {
+        justifyContent: "center",
+        alignItems: "center",
+        width: 285,
+        height: 285,
+        borderRadius: 90,
+        backgroundColor: COLORS.orange,
+    },
+    scanText: {
+        color: COLORS.white,
+        fontSize: 34,
+        textAlign: "center",
+    },
+    nubrCardScan: {
+        textAlign: "center",
+        fontSize: 30,
+        fontFamily: "padauk-bold",
+        color: COLORS.black
+    },
+    nubrCardScanText: {
+        textAlign: "center",
+        fontSize: 30,
+        fontFamily: "padauk-bold",
+        color: COLORS.black
+    },
+    syncMessageContainer: {
+        position: "absolute",
+        top: 60,
+        alignSelf: "center",
+        backgroundColor: "rgba(0,0,0,0.7)",
+        padding: 10,
+        borderRadius: 5,
+        elevation: 5,
+    },
+    syncMessageText: {
+        color: COLORS.white,
+        fontSize: 16,
+        textAlign: "center",
+    },
+    autoSyncIndicator: {
+        position: "absolute",
+        bottom: 10,
+        left: 10,
+        backgroundColor: "rgba(0,0,0,0.5)",
+        padding: 8,
+        borderRadius: 5,
+    },
+    autoSyncText: {
+        color: COLORS.white,
+        fontSize: 12,
+    }
 });
